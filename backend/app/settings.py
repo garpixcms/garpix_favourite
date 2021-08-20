@@ -5,3 +5,5 @@ INSTALLED_APPS += [
 ]
 
 ACCEPTED_FAVORITE_MODELS = []
+
+MIGRATION_MODULES['garpix_favourite'] = 'app.migrations.garpix_favourite'

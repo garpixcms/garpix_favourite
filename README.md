@@ -1,48 +1,58 @@
-# GarpixCMS Empty Template
+# Garpix Favourite
 
-Cookiecutter template for GarpixCMS == 1.0.0.
+Избранное для любых моделей. Является частью GarpixCMS.
 
-## Install
+## Быстрый старт
 
-1. Install Docker and docker-compose.
-   
-For Debian, Ubuntu:
+Установка через pipenv:
 
-```
-su
-apt update; apt upgrade -y; apt install -y curl; curl -sSL https://get.docker.com/ | sh; curl -L https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+```bash
+pipenv install garpix_favourite
 ```
 
-Don't forget press CTRL+D to exit from super user account.
+Добавьте `garpix_favourite` в `INSTALLED_APPS` и укажите адрес для миграций:
 
-2. Apply environment variables:
+```python
+# settings.py
+from garpixcms.settings import *  # noqa
 
-```
-cp example.env .env
-```
+INSTALLED_APPS += [
+    'garpix_favourite',
+]
 
-3. Change a random string for `SECRET_KEY` and `POSTGRES_PASSWORD` in `.env`.
-
-4. Install dependencies:
-
-```
-pipenv install
-pipenv shell
+MIGRATION_MODULES['garpix_favourite'] = 'app.migrations.garpix_favourite'
 ```
 
-5. Up docker-compose, migrate database and create super user:
+Создайте директории и файлы:
 
+```bash
+backend/app/migrations/garpix_favourite/
+backend/app/migrations/garpix_favourite/__init__.py
 ```
-docker-compose up -d
+
+Сделайте миграции и мигрируйте:
+
+```bash
 python3 backend/manage.py makemigrations
 python3 backend/manage.py migrate
-python3 backend/manage.py createsuperuser
 ```
 
-6. Run the server:
+@todo Документация в разработке...
 
-```
-python3 backend/manage.py runserver
-```
 
-7. Enjoy!
+# Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+# Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+# License
+
+[MIT](LICENSE)
+
+---
+
+Developed by Garpix / [https://garpix.com](https://garpix.com)
+

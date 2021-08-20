@@ -30,7 +30,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'garpixcms >= 1.7.0',
+        'garpixcms >= 2.0.2',
     ],
 )
 
