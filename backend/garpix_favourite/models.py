@@ -1,16 +1,13 @@
+from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
-from .utils import FavoriteMixin
 
 User = get_user_model()
 
 
-class Favorite(models.Model, FavoriteMixin):
+class Favorite(models.Model):
     """
         Модель "Избранное" для пользователя.
     """
@@ -32,9 +29,6 @@ class Favorite(models.Model, FavoriteMixin):
     created_at = models.DateTimeField(
         auto_now_add=True, verbose_name=_('Created at')
     )
-
-    def get_absolute_url(self) -> str:
-        return reverse('favorite-detail', args=[self.id])
 
     def __str__(self):
         return 'User %i | Favorite: %s %s' % (
