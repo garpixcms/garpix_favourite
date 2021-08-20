@@ -1,6 +1,11 @@
+from logging import getLogger
+
+from typing import Optional
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -12,6 +17,8 @@ except AttributeError:
     raise AttributeError(
         _('ACCEPTED_FAVORITE_MODELS не найдено в настройках.')
     )
+
+logger = getLogger(__name__)
 
 
 def _get_content_type_by_model_name(model_name: str) -> ContentType:
@@ -34,18 +41,29 @@ class FavoriteSerializer(serializers.ModelSerializer):
     def _get_request(self):
         return self.context.get('request')
 
-    def get_favorite_url(self, instance) -> str:
+    def get_favorite_url(self, instance) -> Optional[str]:
         """
             Возвращает полный путь до объекта content_object.
         """
 
-        return self._get_request().build_absolute_uri(
-            instance.content_object.get_absolute_url()
-        )
+        try:
+            return self._get_request().build_absolute_uri(
+                instance.content_object.get_absolute_url()
+            )
+        except AttributeError:
+            logger.error(
+                _(
+                    'Модель "%s" не имеет get_absolute_url().\n'
+                    'favorite_url будет обозначен, как None.\n'
+                    'FavoriteMixin обязателен для использования.'
+                    % instance.content_object.__class__.__name__
+                )
+            )
+            return None
 
     def validate(self, attrs):
         user = self._get_request().user
-        model_name = attrs.pop('model_name')
+        model_name = attrs['model_name']
         object_id = attrs['object_id']
         content_type = _get_content_type_by_model_name(model_name)
         model = self.Meta.model
