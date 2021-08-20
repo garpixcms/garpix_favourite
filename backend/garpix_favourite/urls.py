@@ -3,7 +3,7 @@ from django.urls import path, include
 from .routers import router
 
 urlpatterns = [
-    # favorites/ LIST, CREATE
+    # favorites/ CREATE
     # favorites/{pk}/ DELETE
     # favorites/current/ LIST
 
