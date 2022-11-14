@@ -5,6 +5,7 @@ from typing import Optional
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
+from garpix_user.models import UserSession
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -15,7 +16,7 @@ try:
     ACCEPTED_FAVORITE_MODELS = settings.ACCEPTED_FAVORITE_MODELS
 except AttributeError:
     raise AttributeError(
-        _('ACCEPTED_FAVORITE_MODELS не найдено в настройках.')
+        _('ACCEPTED_FAVORITE_MODELS not found in settings.')
     )
 
 logger = getLogger(__name__)
@@ -62,7 +63,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
             return None
 
     def validate(self, attrs):
-        user = self._get_request().user
+        user = UserSession.get_or_create_user_session(self._get_request())
         model_name = attrs['model_name']
         object_id = attrs['object_id']
         content_type = _get_content_type_by_model_name(model_name)
@@ -75,7 +76,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
                 )
 
         if model.objects.filter(
-                user=user,
+                user_session=user,
                 content_type=content_type,
                 object_id=object_id
         ).exists():
@@ -104,4 +105,4 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        exclude = ('user',)
+        exclude = ('user_session',)

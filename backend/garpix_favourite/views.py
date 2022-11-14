@@ -1,3 +1,6 @@
+from drf_spectacular.utils import extend_schema
+from garpix_user.models import UserSession
+from garpix_user.utils.drf_spectacular import user_session_token_header_parameter
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -7,23 +10,29 @@ from .models import Favorite
 from .serializers import FavoriteSerializer
 
 
+@extend_schema(
+    parameters=[
+        user_session_token_header_parameter()
+    ]
+)
 class FavoriteViewSet(mixins.CreateModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
     serializer_class = FavoriteSerializer
-    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        user = UserSession.get_or_create_user_session(self.request)
         return Favorite.objects.filter(
-            user=self.request.user
+            user_session=user
         )
 
     def perform_create(self, serializer):
+        user = UserSession.get_or_create_user_session(self.request)
         serializer.save(
-            user=self.request.user
+            user_session=user
         )
 
-    @action(methods=['GET'], detail=False, permission_classes=(IsAuthenticated,), url_path='current')
+    @action(methods=['GET'], detail=False, url_path='current')
     def get_user_favorites(self, request):
         queryset = self.filter_queryset(self.get_queryset())
 

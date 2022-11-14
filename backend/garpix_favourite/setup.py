@@ -9,7 +9,7 @@ with open(path.join(settings.BASE_DIR, '..', 'README.md'), encoding='utf-8') as 
 
 setup(
     name='garpix_favourite',
-    version='1.0.0',
+    version='2.0.0',
     description='',
     long_description=long_description,
     url='https://github.com/garpixcms/garpix_favourite',
@@ -30,7 +30,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'garpixcms >= 2.0.2',
+        'garpixcms >= 3.45.0',
+        'garpix-user >= 3.0.1'
     ],
 )
 
