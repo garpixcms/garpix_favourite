@@ -8,10 +8,10 @@ INSTALLED_APPS += [
 
 ACCEPTED_FAVORITE_MODELS = ['User']
 
-MIGRATION_MODULES += {
+MIGRATION_MODULES.update({
     'garpix_favourite': 'app.migrations.garpix_favourite',
     'garpix_user': 'app.migrations.garpix_user'
-}
+})
 
 GARPIX_USER = {
 
