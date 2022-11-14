@@ -8,8 +8,10 @@ INSTALLED_APPS += [
 
 ACCEPTED_FAVORITE_MODELS = ['User']
 
-MIGRATION_MODULES['garpix_favourite'] = 'app.migrations.garpix_favourite'
-MIGRATION_MODULES['garpix_user'] = 'app.migrations.garpix_user'
+MIGRATION_MODULES += {
+    'garpix_favourite': 'app.migrations.garpix_favourite',
+    'garpix_user': 'app.migrations.garpix_user'
+}
 
 GARPIX_USER = {
 
