@@ -7,7 +7,7 @@
 Установка через pipenv:
 
 ```bash
-pipenv install garpix_favourite
+pip install garpix-favourite
 ```
 
 Добавьте `garpix_favourite` в `INSTALLED_APPS` и укажите адрес для миграций:
