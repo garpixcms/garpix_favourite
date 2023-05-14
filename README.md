@@ -23,6 +23,14 @@ INSTALLED_APPS += [
 MIGRATION_MODULES['garpix_favourite'] = 'app.migrations.garpix_favourite'
 ```
 
+Модуль использует [ContentType](https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/), чтобы ограничить список моделей, доступных для добавления в избранное определите переменную `ACCEPTED_FAVORITE_MODELS`
+
+Пример:
+```
+# settings.py
+ACCEPTED_FAVORITE_MODELS = ['Post']
+```
+
 Создайте директории и файлы:
 
 ```bash
