@@ -29,8 +29,7 @@ class Favorite(models.Model):
 
     @property
     def entity(self):
-        ct = ContentType.objects.get_for_id(self.content_type)
-        return ct.get_object_for_this_type(pk=self.object_id)
+        return self.content_type.get_object_for_this_type(pk=self.object_id)
 
     @classmethod
     def get_favorite_by_request(cls, request):

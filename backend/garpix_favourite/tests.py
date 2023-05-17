@@ -39,6 +39,9 @@ class FavoriteTestCase(APITestCase):
             content_type=model_type
         )
 
+    def test_entity(self):
+        self.assertEqual(self.favorite.entity.pk, self.user.pk)
+
     def test_create_favorite(self):
         settings.ACCEPTED_FAVORITE_MODELS += ['User']
 
