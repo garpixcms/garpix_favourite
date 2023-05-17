@@ -39,6 +39,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    content_type = serializers.HiddenField(default=None)
+
     def _get_request(self):
         return self.context.get('request')
 

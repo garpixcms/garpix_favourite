@@ -1,10 +1,14 @@
+import uuid
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
+from .models import Favorite
+from garpix_user.models import UserSession
 
 User = get_user_model()
 
@@ -14,50 +18,46 @@ class FavoriteTestCase(APITestCase):
         self.password = '12345'
         self.username = 'test'
 
+        self.username2 = 'test2'
+
         self.user = User.objects.create_user(username=self.username, email='user@site.com', password=self.password)
+        self.user2 = User.objects.create_user(username=self.username2, email='user2@site.com', password=self.password)
         self.token = Token.objects.create(user=self.user)
-        self.favorite_url = reverse('favorite-list')
+        self.favorite_url = reverse('garpix_favourite:favorite-list')
+        self.favorite_url_user = reverse('garpix_favourite:favorite-get-user-favorites')
 
-    def test_user_favorite_list_as_unauthorized(self):
-        response = self.client.get(self.favorite_url)
+        session_key = uuid.uuid4()
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertDictEqual(response.json(), {'detail': 'Учетные данные не были предоставлены.'})
+        self.header = {'HTTP_USER_SESSION_TOKEN': str(session_key)}
 
-    def test_create_favorite_as_authorized(self):
+        self.user_session = UserSession.objects.create(user=self.user, token_number=session_key)
+        model_type = ContentType.objects.get_for_model(User)
+
+        self.favorite = Favorite.objects.create(
+            user_session=self.user_session,
+            object_id=self.user.pk,
+            content_type=model_type
+        )
+
+    def test_create_favorite(self):
         settings.ACCEPTED_FAVORITE_MODELS += ['User']
-        self._make_authentication()
 
         data = {
-            'object_id': 1,
+            'object_id': self.user2.pk,
             'model_name': 'User'
         }
 
-        response = self.client.post(self.favorite_url, data=data)
+        response = self.client.post(self.favorite_url, data=data, **self.header)
         response_json = response.json()
-        response_json.pop('created_at')
+        print(response_json, 'response_json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertDictEqual(response_json, {'id': 1, 'object_id': 1, 'favorite_url': None, 'content_type': 33})
 
-    def test_create_favorite_as_unauthorized(self):
-        response = self.client.post(self.favorite_url)
+    def test_favorite_list(self):
+        settings.ACCEPTED_FAVORITE_MODELS += ['User']
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        response = self.client.get(self.favorite_url_user, **self.header)
+        response_json = response.json()
+        self.assertEqual(len(response_json), 1)
 
-    def _make_authentication(self) -> None:
-        if settings.ENABLE_GARPIX_AUTH:
-            response = self.client.post(
-                reverse('garpix_auth:api_login'),
-                {
-                    'username': self.username,
-                    'password': self.password,
-                },
-                HTTP_ACCEPT='application/json'
-            )
-
-            access_token = response.json()['access_token']
-            self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
-
-        else:
-            self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

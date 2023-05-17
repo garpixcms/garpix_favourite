@@ -58,6 +58,15 @@ urlpatterns = [
 ]
 ```
 
+Получение сущности которую добавили в фавориты:
+
+```python
+from garpix_favourite.models import Favorite
+
+obj = Favorite.objects.first()
+
+print(obj.entity, 'entity')
+```
 
 # Changelog
 
