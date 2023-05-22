@@ -7,7 +7,7 @@
 Установка через pipenv:
 
 ```bash
-pipenv install garpix_favourite
+pip install garpix-favourite
 ```
 
 Добавьте `garpix_favourite` в `INSTALLED_APPS` и укажите адрес для миграций:
@@ -21,6 +21,14 @@ INSTALLED_APPS += [
 ]
 
 MIGRATION_MODULES['garpix_favourite'] = 'app.migrations.garpix_favourite'
+```
+
+Модуль использует [ContentType](https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/), чтобы ограничить список моделей, доступных для добавления в избранное определите переменную `ACCEPTED_FAVORITE_MODELS`
+
+Пример:
+```
+# settings.py
+ACCEPTED_FAVORITE_MODELS = ['Post']
 ```
 
 Создайте директории и файлы:
@@ -50,6 +58,15 @@ urlpatterns = [
 ]
 ```
 
+Получение сущности которую добавили в фавориты:
+
+```python
+from garpix_favourite.models import Favorite
+
+obj = Favorite.objects.first()
+
+print(obj.entity, 'entity')
+```
 
 # Changelog
 

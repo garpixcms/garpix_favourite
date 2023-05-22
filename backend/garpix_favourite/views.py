@@ -3,7 +3,6 @@ from garpix_user.models import UserSession
 from garpix_user.utils.drf_spectacular import user_session_token_header_parameter
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Favorite
@@ -21,13 +20,13 @@ class FavoriteViewSet(mixins.CreateModelMixin,
     serializer_class = FavoriteSerializer
 
     def get_queryset(self):
-        user = UserSession.get_or_create_user_session(self.request)
+        user = UserSession.get_from_request(self.request)
         return Favorite.objects.filter(
             user_session=user
         )
 
     def perform_create(self, serializer):
-        user = UserSession.get_or_create_user_session(self.request)
+        user = UserSession.get_from_request(self.request)
         serializer.save(
             user_session=user
         )
